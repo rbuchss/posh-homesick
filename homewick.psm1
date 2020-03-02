@@ -1,3 +1,5 @@
+$Local:HomewickRepoPath = Join-Path $HOME '.homesick' 'repos'
+
 <#
   Wrapper for homewick task invoking
 #>
@@ -52,7 +54,8 @@ function Set-HomewickLocation {
     [string]
     $Path
   )
-  Write-Host "cd $Path"
+  $Path = Join-Path $HomewickRepoPath $Path
+  Set-Location $Path
 }
 
 function Get-HomewickClone {
