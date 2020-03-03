@@ -1,5 +1,9 @@
+<# Module Vars #>
 $global:HomewickRepoPath = Join-Path $HOME '.homesick' 'repos'
 $script:DefaultGithubUrl = 'https://github.com'
+
+<# Module Aliases #>
+Set-Alias -Name homewick -Value Invoke-Homewick
 
 <#
   Wrapper for homewick task invoking
