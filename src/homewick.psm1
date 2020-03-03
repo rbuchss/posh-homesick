@@ -1,4 +1,5 @@
 $Local:HomewickRepoPath = Join-Path $HOME '.homesick' 'repos'
+$Local:DefaultGithubUrl = 'https://github.com'
 
 <#
   Wrapper for homewick task invoking
@@ -36,7 +37,6 @@ function Invoke-Homewick {
     'clone' { Get-HomewickClone -URL $Arguments[0] }
     'generate' { throw 'not implemented!' }
     'help' { Show-HomewickHelp }
-    'generate' { throw 'not implemented!' }
     'link' { throw 'not implemented!' }
     'list' { throw 'not implemented!' }
     'open' { throw 'not implemented!' }
@@ -62,10 +62,17 @@ function Get-HomewickClone {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
+    # TODO add '<username>/*.git$' validation
     [string]
     $URL
   )
-  Write-Host "clone $URL"
+  if (-not ($URL -match '^(http:|https:|git@)')) {
+    $URL = "$DefaultGithubUrl/$URL"
+  }
+
+  $repoName = $URL -replace '.+/([^/]+)\.git', '$1'
+  $clonePath = Join-Path $HomewickRepoPath $repoName
+  Invoke-Utf8ConsoleCommand { git clone $URL $clonePath }
 }
 
 function Show-HomewickHelp {
