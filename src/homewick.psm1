@@ -17,16 +17,7 @@ function Invoke-Homewick {
       HelpMessage = 'yipp!'
     )]
     [ValidateSet(
-      'cd',
-      'clone',
-      'generate',
-      'help',
-      'link',
-      'list',
-      'open',
-      'pull',
-      'push',
-      'unlink',
+      [SubCommands],
       ErrorMessage = "Value '{0}' is invalid. Try one of: '{1}'"
     )]
     [string] $Task,
