@@ -1,5 +1,5 @@
-$Local:HomewickRepoPath = Join-Path $HOME '.homesick' 'repos'
-$Local:DefaultGithubUrl = 'https://github.com'
+$global:HomewickRepoPath = Join-Path $HOME '.homesick' 'repos'
+$script:DefaultGithubUrl = 'https://github.com'
 
 <#
   Wrapper for homewick task invoking
@@ -25,16 +25,17 @@ function Invoke-Homewick {
       'unlink',
       ErrorMessage = "Value '{0}' is invalid. Try one of: '{1}'"
     )]
-    [string]
-    $Task,
+    [string] $Task,
 
-    [Parameter(Position=1, ValueFromRemainingArguments)]
-    [string[]]
-    $Arguments
+    [Parameter(Position = 1)]
+    [string] $Subject,
+
+    [Parameter(Position = 2, ValueFromRemainingArguments)]
+    [string[]] $Arguments
   )
   switch ($Task) {
-    'cd' { Set-HomewickLocation -Path $Arguments[0] }
-    'clone' { Get-HomewickClone -URL $Arguments[0] }
+    'cd' { Set-HomewickLocation -Path $Subject }
+    'clone' { Get-HomewickClone -URL $Subject $Arguments }
     'generate' { throw 'not implemented!' }
     'help' { Show-HomewickHelp }
     'link' { throw 'not implemented!' }
@@ -50,9 +51,22 @@ function Invoke-Homewick {
 function Set-HomewickLocation {
   [CmdletBinding()]
   param (
-    [Parameter(Mandatory)]
-    [string]
-    $Path
+    [Parameter()]
+    [ArgumentCompleter({
+      [OutputType([System.Management.Automation.CompletionResult])]  # zero to many
+      param(
+        [string] $CommandName,
+        [string] $ParameterName,
+        [string] $WordToComplete,
+        [System.Management.Automation.Language.CommandAst] $CommandAst,
+        [System.Collections.IDictionary] $FakeBoundParameters
+      )
+      $searchPath = Join-Path $HomewickRepoPath $WordToComplete
+      $paths = Get-ChildItem "$searchPath*" -Directory | Select-Object -ExpandProperty Name
+      if (-not $WordToComplete) { $paths += $HomewickRepoPath }
+      $paths
+    })]
+    [string] $Path
   )
   $Path = Join-Path $HomewickRepoPath $Path
   Set-Location $Path

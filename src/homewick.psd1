@@ -23,7 +23,8 @@ PowerShellVersion = '5.0'
 
 # Functions to export from this module
 FunctionsToExport = @(
-    'Invoke-Homewick'
+    'Invoke-Homewick',
+    'Set-HomewickLocation'
 )
 
 # Cmdlets to export from this module
