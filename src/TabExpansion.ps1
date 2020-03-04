@@ -26,6 +26,11 @@ function HomewickExpansionInternal($lastBlock) {
     "^cd.* (?<repo>\S*)$" {
       homewickRepos $matches['repo']
     }
+
+    "^help.* (?<cmd>\S*)$" {
+      homewickSubcommands $matches['cmd']
+    }
+
     default { throw }
   }
 }
@@ -35,4 +40,10 @@ function script:homewickRepos($filter) {
   $paths = Get-ChildItem "$searchPath*" -Directory | Select-Object -ExpandProperty Name
   if (-not $filter) { $paths += $HomewickRepoPath }
   $paths
+}
+
+function script:homewickSubcommands($filter) {
+  $subcommands = [Subcommand]::validValues 
+  if (-not $filter) { return $subcommands }
+  $subcommands | Where-Object { $_ -like "$filter*" }
 }
