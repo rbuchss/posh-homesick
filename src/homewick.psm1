@@ -1,3 +1,5 @@
+using module '.\subcommands.psm1'
+
 <# Module Vars #>
 $global:HomewickRepoPath = Join-Path $HOME '.homesick' 'repos'
 $script:DefaultGithubUrl = 'https://github.com'
