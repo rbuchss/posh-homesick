@@ -23,8 +23,7 @@ PowerShellVersion = '5.0'
 
 # Functions to export from this module
 FunctionsToExport = @(
-    'Invoke-Homewick',
-    'Set-HomewickLocation'
+    'Invoke-Homewick'
 )
 
 # Cmdlets to export from this module
@@ -39,7 +38,8 @@ AliasesToExport = @(
 )
 
 NestedModules = @(
-    'utility.ps1'
+    'utility.ps1',
+    'TabExpansion.ps1'
 )
 
 # Private data to pass to the module specified in RootModule/ModuleToProcess.

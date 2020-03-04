@@ -49,20 +49,6 @@ function Set-HomewickLocation {
   [CmdletBinding()]
   param (
     [Parameter()]
-    [ArgumentCompleter({
-      [OutputType([System.Management.Automation.CompletionResult])]  # zero to many
-      param(
-        [string] $CommandName,
-        [string] $ParameterName,
-        [string] $WordToComplete,
-        [System.Management.Automation.Language.CommandAst] $CommandAst,
-        [System.Collections.IDictionary] $FakeBoundParameters
-      )
-      $searchPath = Join-Path $HomewickRepoPath $WordToComplete
-      $paths = Get-ChildItem "$searchPath*" -Directory | Select-Object -ExpandProperty Name
-      if (-not $WordToComplete) { $paths += $HomewickRepoPath }
-      $paths
-    })]
     [string] $Path
   )
   $Path = Join-Path $HomewickRepoPath $Path
