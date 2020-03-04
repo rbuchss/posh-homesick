@@ -34,7 +34,7 @@ function Invoke-Homewick {
     'cd' { Set-HomewickLocation -Path $Subject }
     'clone' { Get-HomewickClone -URL $Subject $Arguments }
     'generate' { throw 'not implemented!' }
-    'help' { Show-HomewickHelp }
+    'help' { Show-HomewickHelp $Subject }
     'link' { throw 'not implemented!' }
     'list' { throw 'not implemented!' }
     'open' { throw 'not implemented!' }
@@ -90,10 +90,16 @@ function Show-HomewickHelp {
   [CmdletBinding()]
   param (
     [Parameter()]
+    [ValidateScript({
+      ($_ -eq '') -or ([Subcommand]::validValues.contains($_))
+    })]
     [string]
     $Task
   )
-  Write-Host "Help"
+  switch ($Task) {
+    'cd' { Get-Help Set-HomewickLocation }
+    default { Get-Help Invoke-Homewick }
+  }
 }
 
 <#
