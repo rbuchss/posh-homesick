@@ -73,9 +73,16 @@ function Get-HomewickClone {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
-    # TODO add '<username>/*.git$' validation
+    [ValidateScript({
+      $_ -match '([^/]+)/(.+)\.git'
+    })]
     [string]
-    $URL
+    $URL,
+
+    # TODO support autocomplete
+    [Parameter(ValueFromRemainingArguments)]
+    [string[]]
+    $Arguments
   )
   if (-not ($URL -match '^(http:|https:|git@)')) {
     $URL = "$DefaultGithubUrl/$URL"
@@ -83,7 +90,7 @@ function Get-HomewickClone {
 
   $repoName = $URL -replace '.+/([^/]+)\.git', '$1'
   $clonePath = Join-Path $HomewickRepoPath $repoName
-  Invoke-Utf8ConsoleCommand { git clone $URL $clonePath }
+  Invoke-Utf8ConsoleCommand { git clone $URL $clonePath $Arguments }
 }
 
 function Show-HomewickHelp {
@@ -98,6 +105,7 @@ function Show-HomewickHelp {
   )
   switch ($Task) {
     'cd' { Get-Help Set-HomewickLocation }
+    'clone' { Get-Help Get-HomewickClone }
     default { Get-Help Invoke-Homewick }
   }
 }
