@@ -96,6 +96,7 @@ function Show-HomewickHelp {
   switch ($Task) {
     'cd' { Get-Help Set-HomewickLocation }
     'clone' { Get-Help Get-HomewickClone }
+    'list' { Get-Help Get-HomewickRepos }
     'open' { Get-Help Open-HomewickRepo }
     default { Get-Help Invoke-Homewick }
   }
