@@ -44,7 +44,7 @@ function Invoke-Homewick {
     'open' { Open-HomewickRepo $Subject }
     'pull' { throw 'not implemented!' }
     'push' { throw 'not implemented!' }
-    'unlink' { throw 'not implemented!' }
+    'unlink' { Remove-HomewickRepoLinks $Subject }
     Default { throw }
   }
 }
@@ -99,6 +99,7 @@ function Get-HomewickHelp {
     'link' { Get-Help Set-HomewickRepoLinks }
     'list' { Get-Help Get-HomewickRepos }
     'open' { Get-Help Open-HomewickRepo }
+    'unlink' { Get-Help Remove-HomewickRepoLinks }
     default { Get-Help Invoke-Homewick }
   }
 }
@@ -135,7 +136,7 @@ function Set-HomewickRepoLinks {
     $linkPath = Join-Path $env:HOME $_.Name
 
     if (Test-Path $linkPath) {
-      Write-Host "exists:`t`t'$linkPath' -> '$_'" -ForegroundColor Blue 
+      Write-Host "exists:`t`t'$linkPath' -> '$_'" -ForegroundColor Blue
 
       if ($force) {
         Write-Host "overwrite?`t'$linkPath' -> '$_'" -ForegroundColor Red
@@ -170,5 +171,44 @@ function Open-HomewickRepo {
     }
   } catch {
     throw "Error: EDITOR command: '$env:EDITOR' does not exist!"
+  }
+}
+
+<#
+  Removes symlinks for all files in repo home dir in $HOME
+#>
+function Remove-HomewickRepoLinks {
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory)]
+    [ValidateScript({
+      $path = Join-Path $HomewickRepoPath $_
+      Test-Path $path
+    })]
+    [string]
+    $Repo
+  )
+
+  $path = Join-Path $HomewickRepoPath $Repo
+
+  $repoHome = if (Test-Path (Join-Path $path 'windows-home')) {
+    Join-Path $path 'windows-home'
+  } elseif (Test-Path (Join-Path $path 'home')) {
+    Join-Path $path 'home'
+  } else {
+    throw "Repo: '$Repo' has neither 'home' nor 'windows-home' directories required for linking!"
+  }
+
+  Write-Host "unlinking home files from '$Repo' ..." -ForegroundColor Yellow
+
+  Get-ChildItem $repoHome | Foreach-Object {
+    $linkPath = Join-Path $env:HOME $_.Name
+
+    if (Test-Path $linkPath) {
+      Write-Host "removing link:`t`t'$linkPath' -> '$_'" -ForegroundColor Blue
+      Remove-Item $linkPath -Confirm > $null
+    } else {
+      Write-Host "link does not exist (noop):`t`t'$linkPath' -> '$_'" -ForegroundColor Gray
+    }
   }
 }

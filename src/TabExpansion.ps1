@@ -27,7 +27,7 @@ function HomewickExpansionInternal($lastBlock) {
       homewickRepos $matches['repo'] $true
     }
 
-    "^(link).* (?<repo>\S*)$" {
+    "^(link|unlink).* (?<repo>\S*)$" {
       homewickRepos $matches['repo'] $false
     }
 
