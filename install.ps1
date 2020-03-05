@@ -2,4 +2,8 @@ param([switch]$WhatIf = $false, [switch]$Force = $false, [switch]$Verbose = $fal
 
 $installDir = Split-Path $MyInvocation.MyCommand.Path -Parent
 
-Import-Module $installDir\src\homewick.psd1 -Force:$Force
+if ($Force) {
+  Remove-Module homewick
+}
+
+Import-Module $installDir\src\homewick.psd1
