@@ -38,7 +38,7 @@ function Invoke-Homewick {
     'cd' { Set-HomewickLocation -Path $Subject }
     'clone' { Get-HomewickClone -URL $Subject $Arguments }
     'generate' { throw 'not implemented!' }
-    'help' { Show-HomewickHelp $Subject }
+    'help' { Get-HomewickHelp $Subject }
     'link' { throw 'not implemented!' }
     'list' { Get-HomewickRepos }
     'open' { Open-HomewickRepo $Subject }
@@ -83,7 +83,7 @@ function Get-HomewickClone {
   Invoke-Utf8ConsoleCommand { git clone $URL $clonePath $Arguments }
 }
 
-function Show-HomewickHelp {
+function Get-HomewickHelp {
   [CmdletBinding()]
   param (
     [Parameter()]
