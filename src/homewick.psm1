@@ -42,7 +42,7 @@ function Invoke-Homewick {
     'link' { Set-HomewickRepoLinks $Subject }
     'list' { Get-HomewickRepos }
     'open' { Open-HomewickRepo $Subject }
-    'pull' { throw 'not implemented!' }
+    'pull' { Invoke-HomewickRepoPull -Repo $Subject $Arguments }
     'push' { throw 'not implemented!' }
     'unlink' { Remove-HomewickRepoLinks $Subject }
     Default { throw }
@@ -99,6 +99,7 @@ function Get-HomewickHelp {
     'link' { Get-Help Set-HomewickRepoLinks }
     'list' { Get-Help Get-HomewickRepos }
     'open' { Get-Help Open-HomewickRepo }
+    'pull' { Get-Help Invoke-HomewickRepoPull }
     'unlink' { Get-Help Remove-HomewickRepoLinks }
     default { Get-Help Invoke-Homewick }
   }
@@ -172,6 +173,27 @@ function Open-HomewickRepo {
   } catch {
     throw "Error: EDITOR command: '$env:EDITOR' does not exist!"
   }
+}
+
+function Invoke-HomewickRepoPull {
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory)]
+    [ValidateScript({
+      $path = Join-Path $HomewickRepoPath $_
+      Test-Path $path
+    })]
+    [string]
+    $Repo,
+
+    # TODO support autocomplete
+    [Parameter(ValueFromRemainingArguments)]
+    [string[]]
+    $Arguments
+  )
+
+  $path = Join-Path $HomewickRepoPath $Repo
+  Invoke-Utf8ConsoleCommand { git -C $path pull $Arguments }
 }
 
 <#
