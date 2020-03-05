@@ -80,7 +80,7 @@ function Get-HomewickClone {
 
   $repoName = $URL -replace '.+/([^/]+)\.git', '$1'
   $clonePath = Join-Path $HomewickRepoPath $repoName
-  Invoke-Utf8ConsoleCommand { git clone $URL $clonePath $Arguments }
+  Invoke-Utf8ConsoleCommand { git -c core.symlinks=true clone --recurse-submodules -j8 $URL $clonePath $Arguments }
 }
 
 function Get-HomewickHelp {
