@@ -4,6 +4,10 @@ using module '.\subcommands.psm1'
 $global:HomewickRepoPath = Join-Path $HOME '.homesick' 'repos'
 $script:DefaultGithubUrl = 'https://github.com'
 
+if (-not $env:EDITOR) {
+  $env:EDITOR = 'code'  # defaults to VSCode
+}
+
 <# Module Aliases #>
 Set-Alias -Name homewick -Value Invoke-Homewick
 
@@ -37,7 +41,7 @@ function Invoke-Homewick {
     'help' { Show-HomewickHelp $Subject }
     'link' { throw 'not implemented!' }
     'list' { Get-HomewickRepos }
-    'open' { throw 'not implemented!' }
+    'open' { Open-HomewickRepo $Subject }
     'pull' { throw 'not implemented!' }
     'push' { throw 'not implemented!' }
     'unlink' { throw 'not implemented!' }
@@ -92,12 +96,34 @@ function Show-HomewickHelp {
   switch ($Task) {
     'cd' { Get-Help Set-HomewickLocation }
     'clone' { Get-Help Get-HomewickClone }
+    'open' { Get-Help Open-HomewickRepo }
     default { Get-Help Invoke-Homewick }
   }
 }
 
 function Get-HomewickRepos {
   Get-ChildItem $HomewickRepoPath -Directory | Select-Object -ExpandProperty Name
+}
+
+function Open-HomewickRepo {
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory)]
+    [ValidateScript({
+      $path = Join-Path $HomewickRepoPath $_
+      Test-Path $path
+    })]
+    [string]
+    $Repo
+  )
+  try {
+    if (Get-Command $env:EDITOR) {
+      $path = Join-Path $HomewickRepoPath $Repo
+      Invoke-Expression "$env:EDITOR '$path'"
+    }
+  } catch {
+    throw "Error: EDITOR command: '$env:EDITOR' does not exist!"
+  }
 }
 
 <#

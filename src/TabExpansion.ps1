@@ -23,7 +23,7 @@ function Expand-HomewickCommand {
 
 function HomewickExpansionInternal($lastBlock) {
   switch -Regex ($lastBlock -replace '^(Invoke-Homewick|homewick) ', '') {
-    "^cd.* (?<repo>\S*)$" {
+    "^(cd|open).* (?<repo>\S*)$" {
       homewickRepos $matches['repo']
     }
 
