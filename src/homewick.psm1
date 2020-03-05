@@ -36,7 +36,7 @@ function Invoke-Homewick {
     'generate' { throw 'not implemented!' }
     'help' { Show-HomewickHelp $Subject }
     'link' { throw 'not implemented!' }
-    'list' { throw 'not implemented!' }
+    'list' { Get-HomewickRepos }
     'open' { throw 'not implemented!' }
     'pull' { throw 'not implemented!' }
     'push' { throw 'not implemented!' }
@@ -94,6 +94,10 @@ function Show-HomewickHelp {
     'clone' { Get-Help Get-HomewickClone }
     default { Get-Help Invoke-Homewick }
   }
+}
+
+function Get-HomewickRepos {
+  Get-ChildItem $HomewickRepoPath -Directory | Select-Object -ExpandProperty Name
 }
 
 <#
