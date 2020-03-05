@@ -24,7 +24,11 @@ function Expand-HomewickCommand {
 function HomewickExpansionInternal($lastBlock) {
   switch -Regex ($lastBlock -replace '^(Invoke-Homewick|homewick) ', '') {
     "^(cd|open).* (?<repo>\S*)$" {
-      homewickRepos $matches['repo']
+      homewickRepos $matches['repo'] $true
+    }
+
+    "^(link).* (?<repo>\S*)$" {
+      homewickRepos $matches['repo'] $false
     }
 
     "^help.* (?<cmd>\S*)$" {
@@ -35,10 +39,10 @@ function HomewickExpansionInternal($lastBlock) {
   }
 }
 
-function script:homewickRepos($filter) {
+function script:homewickRepos($filter, $includeBasePath = $false) {
   $searchPath = Join-Path $HomewickRepoPath $filter
   $paths = Get-ChildItem "$searchPath*" -Directory | Select-Object -ExpandProperty Name
-  if (-not $filter) { $paths += $HomewickRepoPath }
+  if ((-not $filter) -and $includeBasePath) { $paths += $HomewickRepoPath }
   $paths
 }
 

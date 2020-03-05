@@ -39,7 +39,7 @@ function Invoke-Homewick {
     'clone' { Get-HomewickClone -URL $Subject $Arguments }
     'generate' { throw 'not implemented!' }
     'help' { Get-HomewickHelp $Subject }
-    'link' { throw 'not implemented!' }
+    'link' { Set-HomewickRepoLinks $Subject }
     'list' { Get-HomewickRepos }
     'open' { Open-HomewickRepo $Subject }
     'pull' { throw 'not implemented!' }
@@ -96,9 +96,55 @@ function Get-HomewickHelp {
   switch ($Task) {
     'cd' { Get-Help Set-HomewickLocation }
     'clone' { Get-Help Get-HomewickClone }
+    'link' { Get-Help Set-HomewickRepoLinks }
     'list' { Get-Help Get-HomewickRepos }
     'open' { Get-Help Open-HomewickRepo }
     default { Get-Help Invoke-Homewick }
+  }
+}
+
+<#
+  Creates symlinks for all files in repo home dir in $HOME
+#>
+function Set-HomewickRepoLinks {
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory)]
+    [ValidateScript({
+      $path = Join-Path $HomewickRepoPath $_
+      Test-Path $path
+    })]
+    [string]
+    $Repo
+  )
+
+  $force = $true
+  $path = Join-Path $HomewickRepoPath $Repo
+
+  $repoHome = if (Test-Path (Join-Path $path 'windows-home')) {
+    Join-Path $path 'windows-home'
+  } elseif (Test-Path (Join-Path $path 'home')) {
+    Join-Path $path 'home'
+  } else {
+    throw "Repo: '$Repo' has neither 'home' nor 'windows-home' directories required for linking!"
+  }
+
+  Write-Host "linking home files from '$Repo' ..." -ForegroundColor Yellow
+
+  Get-ChildItem $repoHome | Foreach-Object {
+    $linkPath = Join-Path $env:HOME $_.Name
+
+    if (Test-Path $linkPath) {
+      Write-Host "exists:`t`t'$linkPath' -> '$_'" -ForegroundColor Blue 
+
+      if ($force) {
+        Write-Host "overwrite?`t'$linkPath' -> '$_'" -ForegroundColor Red
+        New-Item -ItemType SymbolicLink -Path $HOME -Name $_.Name -Value $_ -Confirm -Force > $null
+      }
+    } else {
+      Write-Host "linking:`t`t'$linkPath' -> '$_'" -ForegroundColor Green
+      New-Item -ItemType SymbolicLink -Path $HOME -Name $_.Name -Value $_ > $null
+    }
   }
 }
 
@@ -126,38 +172,3 @@ function Open-HomewickRepo {
     throw "Error: EDITOR command: '$env:EDITOR' does not exist!"
   }
 }
-
-<#
-  Creates symlinks for all files in repo home dir in $HOME
-#>
-
-  # $repoPath = (Get-Item $PSScriptRoot).Parent
-  # $repoName = $repoPath.BaseName
-
-  # $repoHome = if (Test-Path (Join-Path $repoPath "windows-home")) {
-  #   (Join-Path $repoPath "windows-home")
-  # } elseif (Test-Path (Join-Path $repoPath "home")) {
-  #   (Join-Path $repoPath "home")
-  # } else {
-  #   throw "Repo has neither 'home' nor 'windows-home' directories required for linking!"
-  # }
-
-  # $force = $true
-
-  # Write-Host "linking home files from '$repoName' ..." -ForegroundColor Yellow
-
-  # Get-ChildItem $repoHome |
-  # Foreach-Object {
-  #   $linkPath = "$HOME\$($_.Name)"
-
-  #   if (Test-Path $linkPath) {
-  #     Write-Host "exists:`t`t'$linkPath' -> '$_'" -ForegroundColor Blue 
-  #     if ($force) {
-  #       Write-Host "overwrite?`t'$linkPath' -> '$_'" -ForegroundColor Red
-  #       New-Item -ItemType SymbolicLink -Path $HOME -Name $_.Name -Value $_ -Confirm -Force > $null
-  #     }
-  #   } else {
-  #     Write-Host "linking:`t`t'$linkPath' -> '$_'" -ForegroundColor Green
-  #     New-Item -ItemType SymbolicLink -Path $HOME -Name $_.Name -Value $_ > $null
-  #   }
-  # }
