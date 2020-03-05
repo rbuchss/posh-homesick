@@ -37,7 +37,7 @@ function Invoke-Homewick {
   switch ($Task) {
     'cd' { Set-HomewickLocation -Path $Subject }
     'clone' { Get-HomewickClone -URL $Subject $Arguments }
-    'generate' { throw 'not implemented!' }
+    'generate' { New-HomewickRepo $Subject }
     'help' { Get-HomewickHelp $Subject }
     'link' { Set-HomewickRepoLinks $Subject }
     'list' { Get-HomewickRepos }
@@ -83,6 +83,22 @@ function Get-HomewickClone {
   Invoke-Utf8ConsoleCommand { git -c core.symlinks=true clone --recurse-submodules -j8 $URL $clonePath $Arguments }
 }
 
+function New-HomewickRepo {
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory)]
+    [ValidateScript({
+      $path = Join-Path $HomewickRepoPath $_
+      (-not (Test-Path $path))
+    })]
+    [string]
+    $Repo
+  )
+  $templatePath = Join-Path $PSScriptRoot 'template'
+  $destinationPath = Join-Path $HomewickRepoPath $Repo
+  Copy-Item -Path $templatePath -Recurse -Destination $destinationPath -Verbose
+}
+
 function Get-HomewickHelp {
   [CmdletBinding()]
   param (
@@ -96,6 +112,7 @@ function Get-HomewickHelp {
   switch ($Task) {
     'cd' { Get-Help Set-HomewickLocation }
     'clone' { Get-Help Get-HomewickClone }
+    'generate' { Get-Help New-HomewickRepo }
     'link' { Get-Help Set-HomewickRepoLinks }
     'list' { Get-Help Get-HomewickRepos }
     'open' { Get-Help Open-HomewickRepo }
