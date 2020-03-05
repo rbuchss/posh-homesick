@@ -43,7 +43,7 @@ function Invoke-Homewick {
     'list' { Get-HomewickRepos }
     'open' { Open-HomewickRepo $Subject }
     'pull' { Invoke-HomewickRepoPull -Repo $Subject $Arguments }
-    'push' { throw 'not implemented!' }
+    'push' { Invoke-HomewickRepoPush -Repo $Subject $Arguments }
     'unlink' { Remove-HomewickRepoLinks $Subject }
     Default { throw }
   }
@@ -100,6 +100,7 @@ function Get-HomewickHelp {
     'list' { Get-Help Get-HomewickRepos }
     'open' { Get-Help Open-HomewickRepo }
     'pull' { Get-Help Invoke-HomewickRepoPull }
+    'push' { Get-Help Invoke-HomewickRepoPush }
     'unlink' { Get-Help Remove-HomewickRepoLinks }
     default { Get-Help Invoke-Homewick }
   }
@@ -194,6 +195,27 @@ function Invoke-HomewickRepoPull {
 
   $path = Join-Path $HomewickRepoPath $Repo
   Invoke-Utf8ConsoleCommand { git -C $path pull $Arguments }
+}
+
+function Invoke-HomewickRepoPush {
+  [CmdletBinding()]
+  param (
+    [Parameter(Mandatory)]
+    [ValidateScript({
+      $path = Join-Path $HomewickRepoPath $_
+      Test-Path $path
+    })]
+    [string]
+    $Repo,
+
+    # TODO support autocomplete
+    [Parameter(ValueFromRemainingArguments)]
+    [string[]]
+    $Arguments
+  )
+
+  $path = Join-Path $HomewickRepoPath $Repo
+  Invoke-Utf8ConsoleCommand { git -C $path push $Arguments }
 }
 
 <#
