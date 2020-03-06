@@ -23,7 +23,7 @@ PowerShellVersion = '5.0'
 
 # Functions to export from this module
 FunctionsToExport = @(
-    'Invoke-Homewick'
+  'Invoke-Homewick'
 )
 
 # Cmdlets to export from this module
@@ -34,35 +34,35 @@ VariablesToExport = @()
 
 # Aliases to export from this module
 AliasesToExport = @(
-    'homewick'
+  'homewick'
 )
 
 NestedModules = @(
-    'homewick/Utilities.psm1',
-    'homewick/Subcommand.psm1',
-    'homewick/Subcommands.psm1',
-    'homewick/Repo.psm1',
-    'homewick/TabExpansion.ps1'
+  'homewick/Utilities.psm1',
+  'homewick/Subcommand.psm1',
+  'homewick/Subcommands.psm1',
+  'homewick/Repo.psm1',
+  'homewick/TabExpansion.ps1'
 )
 
 # Private data to pass to the module specified in RootModule/ModuleToProcess.
 # This may also contain a PSData hashtable with additional module metadata used by PowerShell.
 PrivateData = @{
-    PSData = @{
-        # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('dot-file', 'homesick', 'homeshick')
+  PSData = @{
+    # Tags applied to this module. These help with module discovery in online galleries.
+    Tags = @('dot-file', 'homesick', 'homeshick')
 
-        # A URL to the license for this module.
-        LicenseUri = 'https://github.com/rbuchss/homewick/blob/master/LICENSE.txt'
+    # A URL to the license for this module.
+    LicenseUri = 'https://github.com/rbuchss/homewick/blob/master/LICENSE.txt'
 
-        # A URL to the main website for this project.
-        ProjectUri = 'https://github.com/rbuchss/homewick'
+    # A URL to the main website for this project.
+    ProjectUri = 'https://github.com/rbuchss/homewick'
 
-        # ReleaseNotes of this module
-        ReleaseNotes = 'https://github.com/rbuchss/homewick/blob/master/CHANGELOG.md'
+    # ReleaseNotes of this module
+    ReleaseNotes = 'https://github.com/rbuchss/homewick/blob/master/CHANGELOG.md'
 
-        # OVERRIDE THIS FIELD FOR PUBLISHED RELEASES - LEAVE AT 'alpha' FOR CLONED/LOCAL REPO USAGE
-        Prerelease = 'beta3x'
-    }
+    # OVERRIDE THIS FIELD FOR PUBLISHED RELEASES - LEAVE AT 'alpha' FOR CLONED/LOCAL REPO USAGE
+    Prerelease = 'beta3x'
+  }
 }
 }
