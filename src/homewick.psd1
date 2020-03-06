@@ -38,8 +38,10 @@ AliasesToExport = @(
 )
 
 NestedModules = @(
-    'utility.ps1',
-    'TabExpansion.ps1'
+    'homewick/Subcommand.psm1',
+    'homewick/Subcommands.psm1',
+    'homewick/Utilities.ps1',
+    'homewick/TabExpansion.ps1'
 )
 
 # Private data to pass to the module specified in RootModule/ModuleToProcess.

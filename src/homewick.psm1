@@ -1,4 +1,4 @@
-using module '.\subcommands.psm1'
+using module '.\homewick\Subcommands.psm1'
 
 <# Module Vars #>
 $global:HomewickRepoPath = Join-Path $HOME '.homesick' 'repos'
@@ -23,7 +23,7 @@ function Invoke-Homewick {
       HelpMessage = 'yipp!'
     )]
     [ValidateSet(
-      [SubCommands],
+      [Subcommands],
       ErrorMessage = "Value '{0}' is invalid. Try one of: '{1}'"
     )]
     [string] $Task,
@@ -104,7 +104,7 @@ function Get-HomewickHelp {
   param (
     [Parameter()]
     [ValidateScript({
-      ($_ -eq '') -or ([Subcommand]::validValues.contains($_))
+      [Subcommand]::IsValidHelpValue($_)
     })]
     [string]
     $Task

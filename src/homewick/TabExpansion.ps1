@@ -1,3 +1,5 @@
+using module '.\Subcommand.psm1'
+
 Register-ArgumentCompleter -CommandName Invoke-Homewick,homewick -Native -ScriptBlock {
   param($wordToComplete, $commandAst, $cursorPosition)
 
@@ -32,7 +34,7 @@ function HomewickExpansionInternal($lastBlock) {
     }
 
     "^help.* (?<cmd>\S*)$" {
-      homewickSubcommands $matches['cmd']
+      [Subcommand]::GetValuesLike($matches['cmd'])
     }
 
     default { throw }
@@ -44,10 +46,4 @@ function script:homewickRepos($filter, $includeBasePath = $false) {
   $paths = Get-ChildItem "$searchPath*" -Directory | Select-Object -ExpandProperty Name
   if ((-not $filter) -and $includeBasePath) { $paths += $HomewickRepoPath }
   $paths
-}
-
-function script:homewickSubcommands($filter) {
-  $subcommands = [Subcommand]::validValues 
-  if (-not $filter) { return $subcommands }
-  $subcommands | Where-Object { $_ -like "$filter*" }
 }
