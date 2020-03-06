@@ -1,4 +1,4 @@
-using module '.\homewick\Subcommands.psm1'
+using module '.\homepsick\Subcommands.psm1'
 
 <# Module Vars #>
 if (-not $env:EDITOR) {
@@ -6,12 +6,12 @@ if (-not $env:EDITOR) {
 }
 
 <# Module Aliases #>
-Set-Alias -Name homewick -Value Invoke-Homewick
+Set-Alias -Name homepsick -Value Invoke-Homepsick
 
 <#
-  Wrapper for homewick task invoking
+  Wrapper for homepsick task invoking
 #>
-function Invoke-Homewick {
+function Invoke-Homepsick {
   [CmdletBinding()]
   param (
     [Parameter(
@@ -35,21 +35,21 @@ function Invoke-Homewick {
     $Arguments
   )
   switch ($Task) {
-    'cd' { Set-HomewickLocation -Path $Subject }
-    'clone' { Get-HomewickClone -URL $Subject $Arguments }
-    'generate' { New-HomewickRepo $Subject }
-    'help' { Get-HomewickHelp $Subject }
-    'link' { Set-HomewickRepoLinks $Subject }
-    'list' { Get-HomewickRepos }
-    'open' { Open-HomewickRepo $Subject }
-    'pull' { Invoke-HomewickRepoPull -Name $Subject $Arguments }
-    'push' { Invoke-HomewickRepoPush -Name $Subject $Arguments }
-    'unlink' { Remove-HomewickRepoLinks $Subject }
+    'cd' { Set-HomepsickLocation -Path $Subject }
+    'clone' { Get-HomepsickClone -URL $Subject $Arguments }
+    'generate' { New-HomepsickRepo $Subject }
+    'help' { Get-HomepsickHelp $Subject }
+    'link' { Set-HomepsickRepoLinks $Subject }
+    'list' { Get-HomepsickRepos }
+    'open' { Open-HomepsickRepo $Subject }
+    'pull' { Invoke-HomepsickRepoPull -Name $Subject $Arguments }
+    'push' { Invoke-HomepsickRepoPush -Name $Subject $Arguments }
+    'unlink' { Remove-HomepsickRepoLinks $Subject }
     Default { throw }
   }
 }
 
-function Set-HomewickLocation {
+function Set-HomepsickLocation {
   [CmdletBinding()]
   param (
     [Parameter()]
@@ -59,7 +59,7 @@ function Set-HomewickLocation {
   [Repo]::SetLocation($Name)
 }
 
-function Get-HomewickClone {
+function Get-HomepsickClone {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
@@ -75,7 +75,7 @@ function Get-HomewickClone {
   ([Repo]::NewFromURL($URL)).Clone($Arguments)
 }
 
-function New-HomewickRepo {
+function New-HomepsickRepo {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
@@ -86,7 +86,7 @@ function New-HomewickRepo {
   [Repo]::CreateFromTemplate($Name)
 }
 
-function Get-HomewickHelp {
+function Get-HomepsickHelp {
   [CmdletBinding()]
   param (
     [Parameter()]
@@ -95,23 +95,23 @@ function Get-HomewickHelp {
     $Task
   )
   switch ($Task) {
-    'cd' { Get-Help Set-HomewickLocation }
-    'clone' { Get-Help Get-HomewickClone }
-    'generate' { Get-Help New-HomewickRepo }
-    'link' { Get-Help Set-HomewickRepoLinks }
-    'list' { Get-Help Get-HomewickRepos }
-    'open' { Get-Help Open-HomewickRepo }
-    'pull' { Get-Help Invoke-HomewickRepoPull }
-    'push' { Get-Help Invoke-HomewickRepoPush }
-    'unlink' { Get-Help Remove-HomewickRepoLinks }
-    default { Get-Help Invoke-Homewick }
+    'cd' { Get-Help Set-HomepsickLocation }
+    'clone' { Get-Help Get-HomepsickClone }
+    'generate' { Get-Help New-HomepsickRepo }
+    'link' { Get-Help Set-HomepsickRepoLinks }
+    'list' { Get-Help Get-HomepsickRepos }
+    'open' { Get-Help Open-HomepsickRepo }
+    'pull' { Get-Help Invoke-HomepsickRepoPull }
+    'push' { Get-Help Invoke-HomepsickRepoPush }
+    'unlink' { Get-Help Remove-HomepsickRepoLinks }
+    default { Get-Help Invoke-Homepsick }
   }
 }
 
 <#
   Creates symlinks for all files in repo home dir in $HOME
 #>
-function Set-HomewickRepoLinks {
+function Set-HomepsickRepoLinks {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
@@ -126,11 +126,11 @@ function Set-HomewickRepoLinks {
   ([Repo]::new($Name)).CreateLinks($Force)
 }
 
-function Get-HomewickRepos {
+function Get-HomepsickRepos {
   [Repo]::GetAll()
 }
 
-function Open-HomewickRepo {
+function Open-HomepsickRepo {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
@@ -141,7 +141,7 @@ function Open-HomewickRepo {
   ([Repo]::new($Name)).Open()
 }
 
-function Invoke-HomewickRepoPull {
+function Invoke-HomepsickRepoPull {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
@@ -157,7 +157,7 @@ function Invoke-HomewickRepoPull {
   ([Repo]::new($Name)).Pull($Arguments)
 }
 
-function Invoke-HomewickRepoPush {
+function Invoke-HomepsickRepoPush {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
@@ -176,7 +176,7 @@ function Invoke-HomewickRepoPush {
 <#
   Removes symlinks for all files in repo home dir in $HOME
 #>
-function Remove-HomewickRepoLinks {
+function Remove-HomepsickRepoLinks {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
