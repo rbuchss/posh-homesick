@@ -38,9 +38,10 @@ AliasesToExport = @(
 )
 
 NestedModules = @(
+    'homewick/Utilities.psm1',
     'homewick/Subcommand.psm1',
     'homewick/Subcommands.psm1',
-    'homewick/Utilities.ps1',
+    'homewick/Repo.psm1',
     'homewick/TabExpansion.ps1'
 )
 

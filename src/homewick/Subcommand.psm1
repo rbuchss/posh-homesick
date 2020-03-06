@@ -14,7 +14,7 @@ class Subcommand {
     'unlink'
   )
 
-  static [string[]] GetValuesLike($filter) {
+  static [string[]] Select($filter) {
     $subcommands = [Subcommand]::validValues
     if (-not $filter) { return [string[]] $subcommands }
     return $subcommands | Where-Object { $_ -like "$filter*" }

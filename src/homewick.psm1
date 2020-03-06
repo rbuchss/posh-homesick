@@ -1,9 +1,6 @@
 using module '.\homewick\Subcommands.psm1'
 
 <# Module Vars #>
-$global:HomewickRepoPath = Join-Path $HOME '.homesick' 'repos'
-$script:DefaultGithubUrl = 'https://github.com'
-
 if (-not $env:EDITOR) {
   $env:EDITOR = 'code'  # defaults to VSCode
 }
@@ -26,13 +23,16 @@ function Invoke-Homewick {
       [Subcommands],
       ErrorMessage = "Value '{0}' is invalid. Try one of: '{1}'"
     )]
-    [string] $Task,
+    [string]
+    $Task,
 
     [Parameter(Position = 1)]
-    [string] $Subject,
+    [string]
+    $Subject,
 
     [Parameter(Position = 2, ValueFromRemainingArguments)]
-    [string[]] $Arguments
+    [string[]]
+    $Arguments
   )
   switch ($Task) {
     'cd' { Set-HomewickLocation -Path $Subject }
@@ -42,8 +42,8 @@ function Invoke-Homewick {
     'link' { Set-HomewickRepoLinks $Subject }
     'list' { Get-HomewickRepos }
     'open' { Open-HomewickRepo $Subject }
-    'pull' { Invoke-HomewickRepoPull -Repo $Subject $Arguments }
-    'push' { Invoke-HomewickRepoPush -Repo $Subject $Arguments }
+    'pull' { Invoke-HomewickRepoPull -Name $Subject $Arguments }
+    'push' { Invoke-HomewickRepoPush -Name $Subject $Arguments }
     'unlink' { Remove-HomewickRepoLinks $Subject }
     Default { throw }
   }
@@ -53,19 +53,17 @@ function Set-HomewickLocation {
   [CmdletBinding()]
   param (
     [Parameter()]
-    [string] $Path
+    [string]
+    $Name
   )
-  $Path = Join-Path $HomewickRepoPath $Path
-  Set-Location $Path
+  [Repo]::SetLocation($Name)
 }
 
 function Get-HomewickClone {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
-    [ValidateScript({
-      $_ -match '([^/]+)/(.+)\.git'
-    })]
+    [ValidateScript({ [Repo]::IsValidURL($_) })]
     [string]
     $URL,
 
@@ -74,38 +72,25 @@ function Get-HomewickClone {
     [string[]]
     $Arguments
   )
-  if (-not ($URL -match '^(http:|https:|git@)')) {
-    $URL = "$DefaultGithubUrl/$URL"
-  }
-
-  $repoName = $URL -replace '.+/([^/]+)\.git', '$1'
-  $clonePath = Join-Path $HomewickRepoPath $repoName
-  Invoke-Utf8ConsoleCommand { git -c core.symlinks=true clone --recurse-submodules -j8 $URL $clonePath $Arguments }
+  ([Repo]::NewFromURL($URL)).Clone($Arguments)
 }
 
 function New-HomewickRepo {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
-    [ValidateScript({
-      $path = Join-Path $HomewickRepoPath $_
-      (-not (Test-Path $path))
-    })]
+    [ValidateScript({ [Repo]::DoesNotExist($_) })]
     [string]
-    $Repo
+    $Name
   )
-  $templatePath = Join-Path $PSScriptRoot 'template'
-  $destinationPath = Join-Path $HomewickRepoPath $Repo
-  Copy-Item -Path $templatePath -Recurse -Destination $destinationPath -Verbose
+  [Repo]::CreateFromTemplate($Name)
 }
 
 function Get-HomewickHelp {
   [CmdletBinding()]
   param (
     [Parameter()]
-    [ValidateScript({
-      [Subcommand]::IsValidHelpValue($_)
-    })]
+    [ValidateScript({ [Subcommand]::IsValidHelpValue($_) })]
     [string]
     $Task
   )
@@ -130,109 +115,62 @@ function Set-HomewickRepoLinks {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
-    [ValidateScript({
-      $path = Join-Path $HomewickRepoPath $_
-      Test-Path $path
-    })]
+    [ValidateScript({ [Repo]::Exists($_) })]
     [string]
-    $Repo
+    $Name,
+
+    [Parameter()]
+    [switch]
+    $Force
   )
-
-  $force = $true
-  $path = Join-Path $HomewickRepoPath $Repo
-
-  $repoHome = if (Test-Path (Join-Path $path 'windows-home')) {
-    Join-Path $path 'windows-home'
-  } elseif (Test-Path (Join-Path $path 'home')) {
-    Join-Path $path 'home'
-  } else {
-    throw "Repo: '$Repo' has neither 'home' nor 'windows-home' directories required for linking!"
-  }
-
-  Write-Host "linking home files from '$Repo' ..." -ForegroundColor Yellow
-
-  Get-ChildItem $repoHome | Foreach-Object {
-    $linkPath = Join-Path $env:HOME $_.Name
-
-    if (Test-Path $linkPath) {
-      Write-Host "exists:`t`t'$linkPath' -> '$_'" -ForegroundColor Blue
-
-      if ($force) {
-        Write-Host "overwrite?`t'$linkPath' -> '$_'" -ForegroundColor Red
-        New-Item -ItemType SymbolicLink -Path $HOME -Name $_.Name -Value $_ -Confirm -Force > $null
-      }
-    } else {
-      Write-Host "linking:`t`t'$linkPath' -> '$_'" -ForegroundColor Green
-      New-Item -ItemType SymbolicLink -Path $HOME -Name $_.Name -Value $_ > $null
-    }
-  }
+  ([Repo]::new($Name)).CreateLinks($Force)
 }
 
 function Get-HomewickRepos {
-  Get-ChildItem $HomewickRepoPath -Directory | Select-Object -ExpandProperty Name
+  [Repo]::GetAll()
 }
 
 function Open-HomewickRepo {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
-    [ValidateScript({
-      $path = Join-Path $HomewickRepoPath $_
-      Test-Path $path
-    })]
+    [ValidateScript({ [Repo]::Exists($_) })]
     [string]
-    $Repo
+    $Name
   )
-  try {
-    if (Get-Command $env:EDITOR) {
-      $path = Join-Path $HomewickRepoPath $Repo
-      Invoke-Expression "$env:EDITOR '$path'"
-    }
-  } catch {
-    throw "Error: EDITOR command: '$env:EDITOR' does not exist!"
-  }
+  ([Repo]::new($Name)).Open()
 }
 
 function Invoke-HomewickRepoPull {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
-    [ValidateScript({
-      $path = Join-Path $HomewickRepoPath $_
-      Test-Path $path
-    })]
+    [ValidateScript({ [Repo]::Exists($_) })]
     [string]
-    $Repo,
+    $Name,
 
     # TODO support autocomplete
     [Parameter(ValueFromRemainingArguments)]
     [string[]]
     $Arguments
   )
-
-  $path = Join-Path $HomewickRepoPath $Repo
-  Invoke-Utf8ConsoleCommand { git -C $path pull $Arguments }
+  ([Repo]::new($Name)).Pull($Arguments)
 }
 
 function Invoke-HomewickRepoPush {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
-    [ValidateScript({
-      $path = Join-Path $HomewickRepoPath $_
-      Test-Path $path
-    })]
+    [ValidateScript({ [Repo]::Exists($_) })]
     [string]
-    $Repo,
+    $Name,
 
     # TODO support autocomplete
     [Parameter(ValueFromRemainingArguments)]
     [string[]]
     $Arguments
   )
-
-  $path = Join-Path $HomewickRepoPath $Repo
-  Invoke-Utf8ConsoleCommand { git -C $path push $Arguments }
+  ([Repo]::new($Name)).Push($Arguments)
 }
 
 <#
@@ -242,34 +180,9 @@ function Remove-HomewickRepoLinks {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
-    [ValidateScript({
-      $path = Join-Path $HomewickRepoPath $_
-      Test-Path $path
-    })]
+    [ValidateScript({ [Repo]::Exists($_) })]
     [string]
-    $Repo
+    $Name
   )
-
-  $path = Join-Path $HomewickRepoPath $Repo
-
-  $repoHome = if (Test-Path (Join-Path $path 'windows-home')) {
-    Join-Path $path 'windows-home'
-  } elseif (Test-Path (Join-Path $path 'home')) {
-    Join-Path $path 'home'
-  } else {
-    throw "Repo: '$Repo' has neither 'home' nor 'windows-home' directories required for linking!"
-  }
-
-  Write-Host "unlinking home files from '$Repo' ..." -ForegroundColor Yellow
-
-  Get-ChildItem $repoHome | Foreach-Object {
-    $linkPath = Join-Path $env:HOME $_.Name
-
-    if (Test-Path $linkPath) {
-      Write-Host "removing link:`t`t'$linkPath' -> '$_'" -ForegroundColor Blue
-      Remove-Item $linkPath -Confirm > $null
-    } else {
-      Write-Host "link does not exist (noop):`t`t'$linkPath' -> '$_'" -ForegroundColor Gray
-    }
-  }
+  ([Repo]::new($Name)).RemoveLinks()
 }

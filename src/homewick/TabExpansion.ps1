@@ -1,4 +1,5 @@
 using module '.\Subcommand.psm1'
+using module '.\Repo.psm1'
 
 Register-ArgumentCompleter -CommandName Invoke-Homewick,homewick -Native -ScriptBlock {
   param($wordToComplete, $commandAst, $cursorPosition)
@@ -26,24 +27,17 @@ function Expand-HomewickCommand {
 function HomewickExpansionInternal($lastBlock) {
   switch -Regex ($lastBlock -replace '^(Invoke-Homewick|homewick) ', '') {
     "^(cd|open).* (?<repo>\S*)$" {
-      homewickRepos $matches['repo'] $true
+      [Repo]::Select($matches['repo'], $true)
     }
 
     "^(link|pull|push|unlink).* (?<repo>\S*)$" {
-      homewickRepos $matches['repo'] $false
+      [Repo]::Select($matches['repo'], $false)
     }
 
     "^help.* (?<cmd>\S*)$" {
-      [Subcommand]::GetValuesLike($matches['cmd'])
+      [Subcommand]::Select($matches['cmd'])
     }
 
     default { throw }
   }
-}
-
-function script:homewickRepos($filter, $includeBasePath = $false) {
-  $searchPath = Join-Path $HomewickRepoPath $filter
-  $paths = Get-ChildItem "$searchPath*" -Directory | Select-Object -ExpandProperty Name
-  if ((-not $filter) -and $includeBasePath) { $paths += $HomewickRepoPath }
-  $paths
 }
