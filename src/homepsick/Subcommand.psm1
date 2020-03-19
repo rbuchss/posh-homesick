@@ -17,7 +17,7 @@ class Subcommand {
   static [string[]] Select($filter) {
     $subcommands = [Subcommand]::validValues
     if (-not $filter) { return [string[]] $subcommands }
-    return $subcommands | Where-Object { $_ -like "$filter*" }
+    return $subcommands.Where({ $_ -like "$filter*" })
   }
 
   static [boolean] IsValidHelpValue($value) {
