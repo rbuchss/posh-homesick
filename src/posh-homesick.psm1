@@ -1,4 +1,4 @@
-using module '.\homepsick\Subcommands.psm1'
+using module '.\posh-homesick\Subcommands.psm1'
 
 <# Module Vars #>
 if (-not $env:EDITOR) {
@@ -6,12 +6,12 @@ if (-not $env:EDITOR) {
 }
 
 <# Module Aliases #>
-Set-Alias -Name homepsick -Value Invoke-Homepsick
+Set-Alias -Name homesick -Value Invoke-Homesick
 
 <#
-  Wrapper for homepsick task invoking
+  Wrapper for homesick task invoking
 #>
-function Invoke-Homepsick {
+function Invoke-Homesick {
   [CmdletBinding()]
   param (
     [Parameter(
@@ -35,21 +35,21 @@ function Invoke-Homepsick {
     $Arguments
   )
   switch ($Task) {
-    'cd' { Set-HomepsickLocation -Path $Subject }
-    'clone' { Get-HomepsickClone -URL $Subject $Arguments }
-    'generate' { New-HomepsickRepo $Subject }
-    'help' { Get-HomepsickHelp $Subject }
-    'link' { Set-HomepsickRepoLinks $Subject }
-    'list' { Get-HomepsickRepos }
-    'open' { Open-HomepsickRepo $Subject }
-    'pull' { Invoke-HomepsickRepoPull -Name $Subject $Arguments }
-    'push' { Invoke-HomepsickRepoPush -Name $Subject $Arguments }
-    'unlink' { Remove-HomepsickRepoLinks $Subject }
+    'cd' { Set-HomesickLocation -Path $Subject }
+    'clone' { Get-HomesickClone -URL $Subject $Arguments }
+    'generate' { New-HomesickRepo $Subject }
+    'help' { Get-HomesickHelp $Subject }
+    'link' { Set-HomesickRepoLinks $Subject }
+    'list' { Get-HomesickRepos }
+    'open' { Open-HomesickRepo $Subject }
+    'pull' { Invoke-HomesickRepoPull -Name $Subject $Arguments }
+    'push' { Invoke-HomesickRepoPush -Name $Subject $Arguments }
+    'unlink' { Remove-HomesickRepoLinks $Subject }
     Default { throw }
   }
 }
 
-function Set-HomepsickLocation {
+function Set-HomesickLocation {
   [CmdletBinding()]
   param (
     [Parameter()]
@@ -59,7 +59,7 @@ function Set-HomepsickLocation {
   [Repo]::SetLocation($Name)
 }
 
-function Get-HomepsickClone {
+function Get-HomesickClone {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
@@ -75,7 +75,7 @@ function Get-HomepsickClone {
   ([Repo]::NewFromURL($URL)).Clone($Arguments)
 }
 
-function New-HomepsickRepo {
+function New-HomesickRepo {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
@@ -86,7 +86,7 @@ function New-HomepsickRepo {
   [Repo]::CreateFromTemplate($Name)
 }
 
-function Get-HomepsickHelp {
+function Get-HomesickHelp {
   [CmdletBinding()]
   param (
     [Parameter()]
@@ -95,23 +95,23 @@ function Get-HomepsickHelp {
     $Task
   )
   switch ($Task) {
-    'cd' { Get-Help Set-HomepsickLocation }
-    'clone' { Get-Help Get-HomepsickClone }
-    'generate' { Get-Help New-HomepsickRepo }
-    'link' { Get-Help Set-HomepsickRepoLinks }
-    'list' { Get-Help Get-HomepsickRepos }
-    'open' { Get-Help Open-HomepsickRepo }
-    'pull' { Get-Help Invoke-HomepsickRepoPull }
-    'push' { Get-Help Invoke-HomepsickRepoPush }
-    'unlink' { Get-Help Remove-HomepsickRepoLinks }
-    default { Get-Help Invoke-Homepsick }
+    'cd' { Get-Help Set-HomesickLocation }
+    'clone' { Get-Help Get-HomesickClone }
+    'generate' { Get-Help New-HomesickRepo }
+    'link' { Get-Help Set-HomesickRepoLinks }
+    'list' { Get-Help Get-HomesickRepos }
+    'open' { Get-Help Open-HomesickRepo }
+    'pull' { Get-Help Invoke-HomesickRepoPull }
+    'push' { Get-Help Invoke-HomesickRepoPush }
+    'unlink' { Get-Help Remove-HomesickRepoLinks }
+    default { Get-Help Invoke-Homesick }
   }
 }
 
 <#
   Creates symlinks for all files in repo home dir in $HOME
 #>
-function Set-HomepsickRepoLinks {
+function Set-HomesickRepoLinks {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
@@ -126,11 +126,11 @@ function Set-HomepsickRepoLinks {
   ([Repo]::new($Name)).CreateLinks($Force)
 }
 
-function Get-HomepsickRepos {
+function Get-HomesickRepos {
   [Repo]::GetAll()
 }
 
-function Open-HomepsickRepo {
+function Open-HomesickRepo {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
@@ -141,7 +141,7 @@ function Open-HomepsickRepo {
   ([Repo]::new($Name)).Open()
 }
 
-function Invoke-HomepsickRepoPull {
+function Invoke-HomesickRepoPull {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
@@ -157,7 +157,7 @@ function Invoke-HomepsickRepoPull {
   ([Repo]::new($Name)).Pull($Arguments)
 }
 
-function Invoke-HomepsickRepoPush {
+function Invoke-HomesickRepoPush {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]
@@ -176,7 +176,7 @@ function Invoke-HomepsickRepoPush {
 <#
   Removes symlinks for all files in repo home dir in $HOME
 #>
-function Remove-HomepsickRepoLinks {
+function Remove-HomesickRepoLinks {
   [CmdletBinding()]
   param (
     [Parameter(Mandatory)]

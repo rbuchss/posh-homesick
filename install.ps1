@@ -2,8 +2,8 @@ param([switch]$WhatIf = $false, [switch]$Force = $false, [switch]$Verbose = $fal
 
 $installDir = Split-Path $MyInvocation.MyCommand.Path -Parent
 
-if ($Force -and (Get-Module homepsick)) {
-  Remove-Module homepsick -Force -Verbose:$Verbose
+if ($Force -and (Get-Module posh-homesick)) {
+  Remove-Module posh-homesick -Force -Verbose:$Verbose
 }
 
-Import-Module $installDir\src\homepsick.psd1 -Force:$Force -Verbose:$Verbose
+Import-Module $installDir\src\posh-homesick.psd1 -Force:$Force -Verbose:$Verbose

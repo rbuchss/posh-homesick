@@ -1,7 +1,7 @@
 @{
 
 # Script module or binary module file associated with this manifest.
-RootModule = 'homepsick.psm1'
+RootModule = 'posh-homesick.psm1'
 
 # Version number of this module.
 ModuleVersion = '0.0.0.0'
@@ -23,7 +23,7 @@ PowerShellVersion = '5.0'
 
 # Functions to export from this module
 FunctionsToExport = @(
-  'Invoke-Homepsick'
+  'Invoke-Homesick'
 )
 
 # Cmdlets to export from this module
@@ -34,15 +34,15 @@ VariablesToExport = @()
 
 # Aliases to export from this module
 AliasesToExport = @(
-  'homepsick'
+  'homesick'
 )
 
 NestedModules = @(
-  'homepsick/Utilities.psm1',
-  'homepsick/Subcommand.psm1',
-  'homepsick/Subcommands.psm1',
-  'homepsick/Repo.psm1',
-  'homepsick/TabExpansion.ps1'
+  'posh-homesick/Utilities.psm1',
+  'posh-homesick/Subcommand.psm1',
+  'posh-homesick/Subcommands.psm1',
+  'posh-homesick/Repo.psm1',
+  'posh-homesick/TabExpansion.ps1'
 )
 
 # Private data to pass to the module specified in RootModule/ModuleToProcess.
@@ -53,13 +53,13 @@ PrivateData = @{
     Tags = @('dot-file', 'homesick', 'homeshick')
 
     # A URL to the license for this module.
-    LicenseUri = 'https://github.com/rbuchss/homepsick/blob/master/LICENSE.txt'
+    LicenseUri = 'https://github.com/rbuchss/posh-homesick/blob/master/LICENSE.txt'
 
     # A URL to the main website for this project.
-    ProjectUri = 'https://github.com/rbuchss/homepsick'
+    ProjectUri = 'https://github.com/rbuchss/posh-homesick'
 
     # ReleaseNotes of this module
-    ReleaseNotes = 'https://github.com/rbuchss/homepsick/blob/master/CHANGELOG.md'
+    ReleaseNotes = 'https://github.com/rbuchss/posh-homesick/blob/master/CHANGELOG.md'
 
     # OVERRIDE THIS FIELD FOR PUBLISHED RELEASES - LEAVE AT 'alpha' FOR CLONED/LOCAL REPO USAGE
     Prerelease = 'beta3x'

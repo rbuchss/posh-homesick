@@ -1,4 +1,4 @@
-using module '..\src\homepsick\Subcommand.psm1'
+using module '..\src\posh-homesick\Subcommand.psm1'
 
 Describe 'Subcommand' {
   It 'Has valid values' {
