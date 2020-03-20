@@ -1,12 +1,15 @@
 using module '..\src\posh-homesick\Repo.psm1'
 
 Describe 'Repo' {
+  BeforeAll {
+    $dummyPath = (Join-Path $PSScriptRoot 'dummy')
+    [Repo]::BasePath = (Join-Path $dummyPath 'home' '.homesick' 'repos')
+  }
+
   Context '.homesick/repos path exists and has repos' {
     BeforeAll {
-      $dummyPath = (Join-Path $PSScriptRoot 'dummy')
       mkdir $dummyPath -Force
       Copy-Item -Recurse (Join-Path $PSScriptRoot 'fixtures' 'home') $dummyPath
-      [Repo]::BasePath = (Join-Path $dummyPath 'home' '.homesick' 'repos')
     }
 
     It '.GetAll' {
@@ -47,9 +50,7 @@ Describe 'Repo' {
 
   Context '.homesick/repos path exists and does not have repos' {
     BeforeAll {
-      $dummyPath = (Join-Path $PSScriptRoot 'dummy')
       mkdir $dummyPath -Force
-      [Repo]::BasePath = (Join-Path $dummyPath 'home' '.homesick' 'repos')
     }
 
     It '.GetAll' {
@@ -84,11 +85,6 @@ Describe 'Repo' {
   }
 
   Context '.homesick/repos path does not exist' {
-    BeforeAll {
-      $dummyPath = (Join-Path $PSScriptRoot 'dummy')
-      [Repo]::BasePath = (Join-Path $dummyPath 'home' '.homesick' 'repos')
-    }
-
     It '.GetAll' {
       Test-Path ([Repo]::BasePath) | Should -BeFalse -Because 'BasePath has not been created yet'
       [Repo]::GetAll() | Should -HaveCount 0
