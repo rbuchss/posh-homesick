@@ -5,14 +5,21 @@ class Repo {
   static [string] $BasePath = (Join-Path $env:HOME '.homesick' 'repos')
   static [string] $BaseURL = 'https://github.com'
 
+  static [string] GetBasePath() {
+    if (-not (Test-Path ([Repo]::BasePath))) {
+      mkdir ([Repo]::BasePath)
+    }
+    return ([Repo]::BasePath)
+  }
+
   static [string[]] GetAll() {
-    return @(Get-ChildItem ([Repo]::BasePath) -Directory | Select-Object -ExpandProperty Name)
+    return @(Get-ChildItem ([Repo]::GetBasePath()) -Directory | Select-Object -ExpandProperty Name)
   }
 
   static [string[]] Select($filter, $includeBasePath) {
-    $searchPath = (Join-Path ([Repo]::BasePath) $filter)
+    $searchPath = (Join-Path ([Repo]::GetBasePath()) $filter)
     $paths = @(Get-ChildItem "$searchPath*" -Directory | Select-Object -ExpandProperty Name)
-    if ((-not $filter) -and $includeBasePath) { $paths += [Repo]::BasePath }
+    if ((-not $filter) -and $includeBasePath) { $paths += [Repo]::GetBasePath() }
     return $paths
   }
 
@@ -32,7 +39,7 @@ class Repo {
   }
 
   static [string] GetPath($name) {
-    return (Join-Path ([Repo]::BasePath) $name)
+    return (Join-Path ([Repo]::GetBasePath()) $name)
   }
 
   static [boolean] Exists($name) {
@@ -47,7 +54,7 @@ class Repo {
     if ($name) {
       ([Repo]::new($name)).SetLocation()
     }
-    Set-Location ([Repo]::BasePath)
+    Set-Location ([Repo]::GetBasePath())
   }
 
   static [void] CreateFromTemplate($name) {
