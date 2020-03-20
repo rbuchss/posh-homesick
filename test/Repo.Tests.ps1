@@ -3,6 +3,7 @@ using module '..\src\posh-homesick\Repo.psm1'
 Describe 'Repo' {
   BeforeAll {
     $dummyPath = (Join-Path $PSScriptRoot 'dummy')
+    Remove-Item $dummyPath -Recurse -Force
     [Repo]::BasePath = (Join-Path $dummyPath 'home' '.homesick' 'repos')
   }
 

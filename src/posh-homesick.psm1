@@ -35,7 +35,7 @@ function Invoke-Homesick {
     $Arguments
   )
   switch ($Task) {
-    'cd' { Set-HomesickLocation -Path $Subject }
+    'cd' { Set-HomesickLocation -Name $Subject }
     'clone' { Get-HomesickClone -URL $Subject $Arguments }
     'generate' { New-HomesickRepo $Subject }
     'help' { Get-HomesickHelp $Subject }

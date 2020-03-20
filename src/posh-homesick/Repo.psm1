@@ -51,7 +51,7 @@ class Repo {
   }
 
   static [void] SetLocation($name) {
-    if ($name) {
+    if ($name -and (-not ($name -eq [Repo]::BasePath))) {
       ([Repo]::new($name)).SetLocation()
     }
     Set-Location ([Repo]::GetBasePath())
