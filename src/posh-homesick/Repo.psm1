@@ -6,7 +6,7 @@ class Repo {
   static [string] $BaseURL = 'https://github.com'
 
   static [string[]] GetAll() {
-    return (Get-ChildItem ([Repo]::BasePath) -Directory | Select-Object -ExpandProperty Name)
+    return @(Get-ChildItem ([Repo]::BasePath) -Directory | Select-Object -ExpandProperty Name)
   }
 
   static [string[]] Select($filter, $includeBasePath) {

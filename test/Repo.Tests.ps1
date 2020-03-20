@@ -34,8 +34,46 @@ Describe 'Repo' {
         }
 
         It 'Returns null if no values match the filter' {
-          [Repo]::Select('does-not-exist', $false) | Should -BeNull
-          [Repo]::Select('does-not-exist', $true) | Should -BeNull
+          [Repo]::Select('does-not-exist', $false) | Should -BeNullOrEmpty
+          [Repo]::Select('does-not-exist', $true) | Should -BeNullOrEmpty
+        }
+      }
+    }
+
+    AfterAll {
+      Remove-Item $dummyPath -Recurse -Force
+    }
+  }
+
+  Context '.homesick/repos path exists and does not have repos' {
+    BeforeAll {
+      $dummyPath = (Join-Path $PSScriptRoot 'dummy')
+      mkdir $dummyPath -Force
+      [Repo]::BasePath = (Join-Path $dummyPath 'home' '.homesick' 'repos')
+    }
+
+    It '.GetAll' {
+      [Repo]::GetAll() | Should -HaveCount 0
+      [Repo]::GetAll() | Should -BeNullOrEmpty
+    }
+
+    Context '.Select' {
+      Context 'With no filter' {
+        It 'Returns no repos and includes base path' {
+          [Repo]::Select($null, $true) | Should -HaveCount 1
+          [Repo]::Select($null, $true) | Should -Contain ([Repo]::BasePath)
+        }
+
+        It 'Returns no repos and excludes base path' {
+          [Repo]::Select($null, $false) | Should -HaveCount 0
+          [Repo]::Select($null, $false) | Should -Not -Contain ([Repo]::BasePath)
+        }
+      }
+
+      Context 'With filter' {
+        It 'Returns null if no values match the filter' {
+          [Repo]::Select('does-not-exist', $false) | Should -BeNullOrEmpty
+          [Repo]::Select('does-not-exist', $true) | Should -BeNullOrEmpty
         }
       }
     }
