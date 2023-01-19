@@ -2,7 +2,7 @@ using namespace System.Management.Automation
 using module '.\Utilities.psm1'
 
 class Repo {
-  static [string] $BasePath = (Join-Path $env:HOME '.homesick' 'repos')
+  static [string] $BasePath = (Join-Path $HOME '.homesick' 'repos')
   static [string] $BaseURL = 'https://github.com'
 
   static [string] GetBasePath() {
@@ -136,18 +136,18 @@ class Repo {
     Write-Host "linking home files from '$($this.name)' ..." -ForegroundColor Yellow
 
     Get-ChildItem $this.GetHomePath() | Foreach-Object {
-      $linkPath = Join-Path $env:HOME $_.Name
+      $linkPath = Join-Path $HOME $_.Name
 
       if (Test-Path $linkPath) {
         Write-Host "exists:`t`t'$linkPath' -> '$_'" -ForegroundColor Blue
 
         if ($force) {
           Write-Host "overwrite?`t'$linkPath' -> '$_'" -ForegroundColor Red
-          New-Item -ItemType SymbolicLink -Path $env:HOME -Name $_.Name -Value $_ -Confirm -Force > $null
+          New-Item -ItemType SymbolicLink -Path $HOME -Name $_.Name -Value $_ -Confirm -Force > $null
         }
       } else {
         Write-Host "linking:`t`t'$linkPath' -> '$_'" -ForegroundColor Green
-        New-Item -ItemType SymbolicLink -Path $env:HOME -Name $_.Name -Value $_ > $null
+        New-Item -ItemType SymbolicLink -Path $HOME -Name $_.Name -Value $_ > $null
       }
     }
   }
@@ -190,7 +190,7 @@ class Repo {
     Write-Host "unlinking home files from '$($this.name)' ..." -ForegroundColor Yellow
 
     Get-ChildItem $this.GetHomePath() | Foreach-Object {
-      $linkPath = Join-Path $env:HOME $_.Name
+      $linkPath = Join-Path $HOME $_.Name
 
       if (Test-Path $linkPath) {
         Write-Host "removing link:`t`t'$linkPath' -> '$_'" -ForegroundColor Blue
